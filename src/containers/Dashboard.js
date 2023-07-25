@@ -95,10 +95,8 @@ export default class {
   };
 
   handleEditTicket(e, bill, bills) {
-    e.preventDefault();
     if (this.counter === undefined || this.id !== bill.id) this.counter = 0;
     if (this.id === undefined || this.id !== bill.id) this.id = bill.id;
-    console.log(bill.id);
     if (this.counter % 2 === 0) {
       bills.forEach((b) => {
         $(`#open-bill${b.id}`).css({ background: "#0D5AE5" });
@@ -144,14 +142,15 @@ export default class {
   handleShowTickets(e, bills, index) {
     if (this.counter === undefined || this.index !== index) this.counter = 0;
     if (this.index === undefined || this.index !== index) this.index = index;
-    if (index === 1) {
-      console.log(this.counter);
-    }
+    // transform props should be handled with classes and checked in if condition
     if (this.counter % 2 === 0) {
       $(`#arrow-icon${this.index}`).css({ transform: "rotate(0deg)" });
       $(`#status-bills-container${this.index}`).html(
         cards(filteredBills(bills, getStatus(this.index)))
       );
+      // event listeners should be added here and removed in else
+      // const tryout = $(`#status-bills-container${this.index}`)[0].querySelectorAll('.bill-card');
+      // console.log(tryout);
       this.counter++;
     } else {
       $(`#arrow-icon${this.index}`).css({ transform: "rotate(90deg)" });

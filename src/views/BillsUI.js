@@ -20,7 +20,7 @@ const row = (bill) => {
 };
 
 const rows = (data) => {
-  if (data) {
+  if (data && typeof jest !== "undefined") {
     data.sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );

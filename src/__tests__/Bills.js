@@ -39,41 +39,55 @@ describe("Given I am connected as an employee", () => {
       expect(windowIcon).toHaveClass("active-icon");
     });
 
-    test("Then bills should be ordered from earliest to latest", () => {
-      document.body.innerHTML = BillsUI({ data: bills });
-      const dates = screen
-        .getAllByText(
-          /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
-        )
-        .map((a) => a.innerHTML);
-      const antiChrono = (a, b) => (a < b ? 1 : -1);
-      const datesSorted = [...dates].sort(antiChrono);
-      expect(dates).toEqual(datesSorted);
-    });
-
     describe("There are bills to display", () => {
-      describe("One bill has pending status", () => {
+      // Initialize DOM
+      beforeAll(() => {
         document.body.innerHTML = BillsUI({ data: bills });
+      });
+
+      describe("One bill has pending status", () => {
         it("should display one element whith pending status", () => {
           const pendingBills = screen.getAllByText("pending");
           expect(pendingBills.length).toBe(1);
+          pendingBills.forEach((bill) => {
+            expect(bill.nodeName).toBe("TD");
+          });
         });
       });
 
       describe("Two bills have refused status", () => {
-        document.body.innerHTML = BillsUI({ data: bills });
         it("should display two elements whith refused status", () => {
           const refusedBills = screen.getAllByText("refused");
           expect(refusedBills.length).toBe(2);
+          refusedBills.forEach((bill) => {
+            expect(bill.nodeName).toBe("TD");
+          });
         });
       });
 
       describe("One bill has accepted status", () => {
-        document.body.innerHTML = BillsUI({ data: bills });
         it("should display one element whith accepted status", () => {
           const acceptedBills = screen.getAllByText("accepted");
           expect(acceptedBills.length).toBe(1);
+          acceptedBills.forEach((bill) => {
+            expect(bill.nodeName).toBe("TD");
+          });
         });
+      });
+
+      test("Then bills should be ordered from earliest to latest", () => {
+        const dates = screen
+          .getAllByText(
+            /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
+          )
+          .map((a) => a.innerHTML);
+        const antiChrono = (a, b) => (a < b ? 1 : -1);
+        const datesSorted = [...dates].sort(antiChrono);
+        expect(dates).toEqual(datesSorted);
+      });
+      // Reset DOM
+      afterAll(() => {
+        document.body.innerHTML = "";
       });
     });
   });

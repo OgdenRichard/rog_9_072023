@@ -10,6 +10,7 @@ import {
 } from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import { bills } from "../fixtures/bills.js";
+import { ROUTES } from "../constants/routes";
 import { ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 
@@ -88,6 +89,27 @@ describe("Given I am connected as an employee", () => {
       // Reset DOM
       afterAll(() => {
         document.body.innerHTML = "";
+      });
+    });
+    // TODO test table w/o bills
+
+    describe("When I click on new bill button", () => {
+      test("Then I shoud be redirected to NewBill page", () => {
+        Object.defineProperty(window, "localStorage", {
+          value: localStorageMock,
+        });
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({
+            type: "Employee",
+          })
+        );
+        const root = document.createElement("div");
+        root.setAttribute("id", "root");
+        document.body.append(root);
+        router();
+        window.onNavigate(ROUTES_PATH.NewBill);
+        expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy();
       });
     });
   });

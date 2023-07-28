@@ -1,8 +1,13 @@
 /**
  * @jest-environment jsdom
  */
-import '@testing-library/jest-dom';
-import { screen, waitFor, toHaveClass} from "@testing-library/dom";
+import "@testing-library/jest-dom";
+import {
+  screen,
+  waitFor,
+  toHaveClass,
+  queryAllByText,
+} from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import { bills } from "../fixtures/bills.js";
 import { ROUTES_PATH } from "../constants/routes.js";
@@ -31,7 +36,7 @@ describe("Given I am connected as an employee", () => {
       await waitFor(() => screen.getByTestId("icon-window"));
       const windowIcon = screen.getByTestId("icon-window");
       // check if bill icon has the proper class to be highlighted
-      expect(windowIcon).toHaveClass('active-icon');
+      expect(windowIcon).toHaveClass("active-icon");
     });
 
     test("Then bills should be ordered from earliest to latest", () => {
@@ -44,6 +49,32 @@ describe("Given I am connected as an employee", () => {
       const antiChrono = (a, b) => (a < b ? 1 : -1);
       const datesSorted = [...dates].sort(antiChrono);
       expect(dates).toEqual(datesSorted);
+    });
+
+    describe("There are bills to display", () => {
+      describe("One bill has pending status", () => {
+        document.body.innerHTML = BillsUI({ data: bills });
+        it("should display one element whith pending status", () => {
+          const pendingBills = screen.getAllByText("pending");
+          expect(pendingBills.length).toBe(1);
+        });
+      });
+
+      describe("Two bills have refused status", () => {
+        document.body.innerHTML = BillsUI({ data: bills });
+        it("should display two elements whith refused status", () => {
+          const refusedBills = screen.getAllByText("refused");
+          expect(refusedBills.length).toBe(2);
+        });
+      });
+
+      describe("One bill has accepted status", () => {
+        document.body.innerHTML = BillsUI({ data: bills });
+        it("should display one element whith accepted status", () => {
+          const acceptedBills = screen.getAllByText("accepted");
+          expect(acceptedBills.length).toBe(1);
+        });
+      });
     });
   });
 });

@@ -9,6 +9,7 @@ import {
   queryAllByText,
 } from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
+import Bills from "../containers/Bills.js";
 import { bills } from "../fixtures/bills.js";
 import { ROUTES } from "../constants/routes";
 import { ROUTES_PATH } from "../constants/routes.js";
@@ -16,6 +17,7 @@ import { localStorageMock } from "../__mocks__/localStorage.js";
 
 import router from "../app/Router.js";
 import win from "global";
+import userEvent from "@testing-library/user-event";
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
@@ -104,6 +106,26 @@ describe("Given I am connected as an employee", () => {
             type: "Employee",
           })
         );
+        document.body.innerHTML = BillsUI({ data: bills });
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname });
+        };
+        const store = null;
+        const billsJs = new Bills({
+          document,
+          onNavigate,
+          store,
+          bills,
+          localStorage: window.localStorage,
+        });
+        const handleClickNewBill = jest.fn(billsJs.handleClickNewBill);
+        const buttonNewBill = document.querySelector(
+          `button[data-testid="btn-new-bill"]`
+        );
+        buttonNewBill.addEventListener("click", handleClickNewBill);
+        userEvent.click(buttonNewBill);
+        expect(handleClickNewBill).toHaveBeenCalled();
+        document.body.innerHTML = "";
         const root = document.createElement("div");
         root.setAttribute("id", "root");
         document.body.append(root);

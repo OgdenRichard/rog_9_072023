@@ -93,6 +93,7 @@ describe("Given I am connected as an employee", () => {
         document.body.innerHTML = "";
       });
     });
+
     // TODO test table w/o bills
 
     describe("When I click on new bill button", () => {
@@ -132,6 +133,49 @@ describe("Given I am connected as an employee", () => {
         router();
         window.onNavigate(ROUTES_PATH.NewBill);
         expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy();
+      });
+    });
+
+    describe("When I click on the eye icon", () => {
+      // TODO tester la présence d'un fichier?
+      beforeEach(() => {
+        jQuery.fn.modal = () => {};
+      });
+      test("A modal should open", async () => {
+        Object.defineProperty(window, "localStorage", {
+          value: localStorageMock,
+        });
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({
+            type: "Employee",
+          })
+        );
+        document.body.innerHTML = BillsUI({ data: bills });
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname });
+        };
+        const store = null;
+        const billsJs = new Bills({
+          document,
+          onNavigate,
+          store,
+          bills,
+          localStorage: window.localStorage,
+        });
+        await waitFor(() => screen.getAllByTestId("icon-eye"));
+        const eyes = screen.getAllByTestId("icon-eye");
+        const handlePreviewFile = jest.fn(billsJs.handleClickIconEye);
+        // const firstEye = document.querySelector(`div[data-testid="icon-eye"]`);
+        const firstEye = eyes[0];
+        firstEye.addEventListener("click", handlePreviewFile(firstEye));
+        userEvent.click(firstEye);
+        expect(handlePreviewFile).toHaveBeenCalled();
+        const modale = screen.getByTestId("modaleFile");
+        expect(modale).toBeTruthy();
+      });
+      afterEach(() => {
+        delete jQuery.fn.modal;
       });
     });
   });

@@ -14,6 +14,7 @@ import { bills } from "../fixtures/bills.js";
 import { ROUTES } from "../constants/routes";
 import { ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
+import { mockStore } from "../__mocks__/store.js";
 
 import router from "../app/Router.js";
 import win from "global";
@@ -116,7 +117,6 @@ describe("Given I am connected as an employee", () => {
           document,
           onNavigate,
           store,
-          bills,
           localStorage: window.localStorage,
         });
         const handleClickNewBill = jest.fn(billsJs.handleClickNewBill);
@@ -160,13 +160,11 @@ describe("Given I am connected as an employee", () => {
           document,
           onNavigate,
           store,
-          bills,
           localStorage: window.localStorage,
         });
         await waitFor(() => screen.getAllByTestId("icon-eye"));
         const eyes = screen.getAllByTestId("icon-eye");
         const handlePreviewFile = jest.fn(billsJs.handleClickIconEye);
-        // const firstEye = document.querySelector(`div[data-testid="icon-eye"]`);
         const firstEye = eyes[0];
         firstEye.addEventListener("click", handlePreviewFile(firstEye));
         userEvent.click(firstEye);

@@ -10,15 +10,16 @@ import {
 } from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import Bills from "../containers/Bills.js";
-import { bills } from "../fixtures/bills.js";
 import { ROUTES } from "../constants/routes";
 import { ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
-import { mockStore } from "../__mocks__/store.js";
-
-import router from "../app/Router.js";
 import win from "global";
 import userEvent from "@testing-library/user-event";
+import mockStore from "../__mocks__/store";
+import { bills } from "../fixtures/bills.js";
+import router from "../app/Router.js";
+
+jest.mock("../app/store", () => mockStore);
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
@@ -174,6 +175,14 @@ describe("Given I am connected as an employee", () => {
       });
       afterEach(() => {
         delete jQuery.fn.modal;
+      });
+    });
+
+    describe("mockstore tests", () => {
+      test("retrieve data", async () => {
+        await waitFor(() => mockStore.bills().list());
+        const tryout = mockStore.bills().list();
+        console.log(tryout);
       });
     });
   });

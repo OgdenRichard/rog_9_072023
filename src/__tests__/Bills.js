@@ -180,9 +180,33 @@ describe("Given I am connected as an employee", () => {
 
     describe("mockstore tests", () => {
       test("retrieve data", async () => {
-        await waitFor(() => mockStore.bills().list());
-        const tryout = mockStore.bills().list();
-        console.log(tryout);
+        Object.defineProperty(window, "localStorage", {
+          value: localStorageMock,
+        });
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({
+            type: "Employee",
+          })
+        );
+        document.body.innerHTML = BillsUI({ data: bills });
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname });
+        };
+        const store = mockStore;
+        const billsJs = new Bills({
+          document,
+          onNavigate,
+          store,
+          localStorage: window.localStorage,
+        });
+        await waitFor(() => billsJs.getBills());
+        const tryout = billsJs.getBills();
+        expect.assertions(1);
+        expect(tryout).resolves.toBeTruthy();
+        /* tryout.forEach((bill) => {
+          console.log(new Intl.DateTimeFormat("fr-FR").format(bill.date));
+        }); */
       });
     });
   });

@@ -177,35 +177,6 @@ describe("Given I am connected as an employee", () => {
         delete jQuery.fn.modal;
       });
     });
-
-    /* describe("mockstore tests", () => {
-      test("retrieve data", async () => {
-        Object.defineProperty(window, "localStorage", {
-          value: localStorageMock,
-        });
-        window.localStorage.setItem(
-          "user",
-          JSON.stringify({
-            type: "Employee",
-          })
-        );
-        document.body.innerHTML = BillsUI({ data: bills });
-        const onNavigate = (pathname) => {
-          document.body.innerHTML = ROUTES({ pathname });
-        };
-        const store = mockStore;
-        const billsJs = new Bills({
-          document,
-          onNavigate,
-          store,
-          localStorage: window.localStorage,
-        });
-        await waitFor(() => billsJs.getBills());
-        const tryout = billsJs.getBills();
-        expect.assertions(1);
-        expect(tryout).resolves.toBeTruthy();
-      });
-    }); */
   });
 
   describe("When function getBills is called", () => {
@@ -240,37 +211,23 @@ describe("Given I am connected as an employee", () => {
       expect(billsArray.length).toBe(4);
     });
 
-    it("Should throw an error if date formatting fails", async () => {
-      const fakeBills = jest
-        .spyOn(mockStore, "bills")
-        .mockImplementation(() => {
-          const billsList = {
-            list() {
-              return Promise.resolve([
-                {
-                  id: "47qAXb6fIm2zOKkLzMro",
-                  vat: "80",
-                  fileUrl:
-                    "https://test.storage.tld/v0/b/billable-677b6.a…f-1.jpg?alt=media&token=c1640e12-a24b-4b11-ae52-529112e9602a",
-                  status: "pending",
-                  type: "Hôtel et logement",
-                  commentary: "séminaire billed",
-                  name: "encore",
-                  fileName: "preview-facture-free-201801-pdf-1.jpg",
-                  date: "2004-04-04",
-                  amount: 400,
-                  commentAdmin: "ok",
-                  email: "a@a",
-                  pct: 20,
-                },
-              ]);
-            },
-          };
-          return billsList;
-        });
+    it("Should return unformatted date value if it is invalid", async () => {
+      jest.spyOn(mockStore, "bills").mockImplementation(() => {
+        const billsList = {
+          list() {
+            return Promise.resolve([
+              {
+                status: "pending",
+                date: "not a date",
+              },
+            ]);
+          },
+        };
+        return billsList;
+      });
       expect.assertions(1);
       const billsArray = await billsJs.getBills();
-      expect(billsArray.length).toBe(2);
+      expect(billsArray[0].date).toEqual("not a date");
     });
   });
 });

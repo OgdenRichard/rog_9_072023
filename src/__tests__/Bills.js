@@ -22,17 +22,20 @@ import router from "../app/Router.js";
 jest.mock("../app/store", () => mockStore);
 
 describe("Given I am connected as an employee", () => {
+  beforeAll(() => {
+    Object.defineProperty(window, "localStorage", {
+      value: localStorageMock,
+    });
+    window.localStorage.setItem(
+      "user",
+      JSON.stringify({
+        type: "Employee",
+      })
+    );
+  });
+
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
-      Object.defineProperty(window, "localStorage", {
-        value: localStorageMock,
-      });
-      window.localStorage.setItem(
-        "user",
-        JSON.stringify({
-          type: "Employee",
-        })
-      );
       const root = document.createElement("div");
       root.setAttribute("id", "root");
       document.body.append(root);
@@ -90,26 +93,17 @@ describe("Given I am connected as an employee", () => {
         const datesSorted = [...dates].sort(antiChrono);
         expect(dates).toEqual(datesSorted);
       });
-      // Reset DOM
       afterAll(() => {
         document.body.innerHTML = "";
       });
     });
 
-    // TODO test table w/o bills
-
     describe("When I click on new bill button", () => {
-      test("Then I shoud be redirected to NewBill page", () => {
-        Object.defineProperty(window, "localStorage", {
-          value: localStorageMock,
-        });
-        window.localStorage.setItem(
-          "user",
-          JSON.stringify({
-            type: "Employee",
-          })
-        );
+      beforeAll(() => {
         document.body.innerHTML = BillsUI({ data: bills });
+      });
+
+      test("Then I shoud be redirected to NewBill page", () => {
         const onNavigate = (pathname) => {
           document.body.innerHTML = ROUTES({ pathname });
         };
@@ -138,21 +132,10 @@ describe("Given I am connected as an employee", () => {
     });
 
     describe("When I click on the eye icon", () => {
-      // TODO tester la présence d'un fichier?
       beforeEach(() => {
         jQuery.fn.modal = () => {};
       });
       test("A modal should open", async () => {
-        Object.defineProperty(window, "localStorage", {
-          value: localStorageMock,
-        });
-        window.localStorage.setItem(
-          "user",
-          JSON.stringify({
-            type: "Employee",
-          })
-        );
-        document.body.innerHTML = BillsUI({ data: bills });
         const onNavigate = (pathname) => {
           document.body.innerHTML = ROUTES({ pathname });
         };
@@ -177,22 +160,14 @@ describe("Given I am connected as an employee", () => {
         delete jQuery.fn.modal;
       });
     });
+    afterAll(() => {
+      document.body.innerHTML = "";
+    });
   });
 
-  describe("When function getBills is called", () => {
-    beforeAll(() => {
-      Object.defineProperty(window, "localStorage", {
-        value: localStorageMock,
-      });
-      window.localStorage.setItem(
-        "user",
-        JSON.stringify({
-          type: "Employee",
-        })
-      );
-      document.body.innerHTML = BillsUI({ data: bills });
-    });
+  // --------- UNIT TESTS --------- //
 
+  describe("When function getBills is called", () => {
     const onNavigate = (pathname) => {
       document.body.innerHTML = ROUTES({ pathname });
     };
@@ -218,7 +193,7 @@ describe("Given I am connected as an employee", () => {
     });
 
     it("Should return unformatted date value if it is invalid", async () => {
-      jest.spyOn(mockStore, "bills").mockImplementation(() => {
+      jest.spyOn(mockStore, "bills").mockImplementationOnce(() => {
         const billsList = {
           list() {
             return Promise.resolve([

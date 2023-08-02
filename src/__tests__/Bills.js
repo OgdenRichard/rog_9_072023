@@ -211,6 +211,12 @@ describe("Given I am connected as an employee", () => {
       expect(billsArray.length).toBe(4);
     });
 
+    it("Should format valid dates", async () => {
+      expect.assertions(1);
+      const billsArray = await billsJs.getBills();
+      expect(billsArray[0].date).toEqual("4 Avr. 04");
+    });
+
     it("Should return unformatted date value if it is invalid", async () => {
       jest.spyOn(mockStore, "bills").mockImplementation(() => {
         const billsList = {

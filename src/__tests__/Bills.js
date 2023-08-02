@@ -178,7 +178,7 @@ describe("Given I am connected as an employee", () => {
       });
     });
 
-    describe("mockstore tests", () => {
+    /* describe("mockstore tests", () => {
       test("retrieve data", async () => {
         Object.defineProperty(window, "localStorage", {
           value: localStorageMock,
@@ -204,10 +204,40 @@ describe("Given I am connected as an employee", () => {
         const tryout = billsJs.getBills();
         expect.assertions(1);
         expect(tryout).resolves.toBeTruthy();
-        /* tryout.forEach((bill) => {
-          console.log(new Intl.DateTimeFormat("fr-FR").format(bill.date));
-        }); */
       });
+    }); */
+  });
+
+  describe("When function getBills is called", () => {
+    beforeAll(() => {
+      Object.defineProperty(window, "localStorage", {
+        value: localStorageMock,
+      });
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          type: "Employee",
+        })
+      );
+      document.body.innerHTML = BillsUI({ data: bills });
+    });
+
+    const onNavigate = (pathname) => {
+      document.body.innerHTML = ROUTES({ pathname });
+    };
+
+    const store = mockStore;
+    const billsJs = new Bills({
+      document,
+      onNavigate,
+      store,
+      localStorage: window.localStorage,
+    });
+
+    it("Should use a promise and return an array of 4 objects if promise is resolved", async () => {
+      expect.assertions(1);
+      const billsArray = await billsJs.getBills();
+      expect(billsArray.length).toBe(4);
     });
   });
 });

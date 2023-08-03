@@ -180,19 +180,19 @@ describe("Given I am connected as an employee", () => {
       localStorage: window.localStorage,
     });
 
-    it("Should use a promise and return an array of 4 objects if promise is resolved", async () => {
+    it("Should use one promise and return an array of 4 objects if promise is resolved", async () => {
       expect.assertions(1);
       const billsArray = await billsJs.getBills();
       expect(billsArray.length).toBe(4);
     });
 
-    it("Should format valid dates", async () => {
+    it("Should return valid dates in a proper format", async () => {
       expect.assertions(1);
       const billsArray = await billsJs.getBills();
       expect(billsArray[0].date).toEqual("4 Avr. 04");
     });
 
-    it("Should return unformatted date value if it is invalid", async () => {
+    it("Should return unformatted date value if invalid", async () => {
       jest.spyOn(mockStore, "bills").mockImplementationOnce(() => {
         const billsList = {
           list() {
@@ -209,6 +209,17 @@ describe("Given I am connected as an employee", () => {
       expect.assertions(1);
       const billsArray = await billsJs.getBills();
       expect(billsArray[0].date).toEqual("not a date");
+    });
+  });
+});
+
+// GET - test d'intégration
+describe("Given I am connected as an employee", () => {
+  describe("When I navigate to bills page", () => {
+    it("Should fetch bills from mock API GET", () => {});
+    describe("When an error occurs whith API", () => {
+      it("Should fetch bills and fail whith a 404 error", () => {});
+      it("Should fetch bills and fail whith a 500 error", () => {});
     });
   });
 });

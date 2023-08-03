@@ -104,6 +104,7 @@ describe("Given I am connected as an employee", () => {
       });
 
       test("Then I shoud be redirected to NewBill page", () => {
+        // TODO voir vraie redirection on click
         const onNavigate = (pathname) => {
           document.body.innerHTML = ROUTES({ pathname });
         };
@@ -153,6 +154,7 @@ describe("Given I am connected as an employee", () => {
         firstEye.addEventListener("click", handlePreviewFile(firstEye));
         userEvent.click(firstEye);
         expect(handlePreviewFile).toHaveBeenCalled();
+        // TODO tester plutot la classe hidden
         const modale = screen.getByTestId("modaleFile");
         expect(modale).toBeTruthy();
       });

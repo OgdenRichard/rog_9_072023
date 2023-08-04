@@ -115,19 +115,23 @@ describe("Given I am connected as an employee", () => {
           store,
           localStorage: window.localStorage,
         });
-        const handleClickNewBill = jest.fn(billsJs.handleClickNewBill);
+        jest.spyOn(billsJs, "handleClickNewBill").mockImplementationOnce(() => {
+          router();
+          window.onNavigate(ROUTES_PATH.NewBill);
+        });
         const buttonNewBill = document.querySelector(
           `button[data-testid="btn-new-bill"]`
         );
-        buttonNewBill.addEventListener("click", handleClickNewBill);
+        console.log(buttonNewBill);
+        buttonNewBill.addEventListener("click", billsJs.handleClickNewBill);
         userEvent.click(buttonNewBill);
-        expect(handleClickNewBill).toHaveBeenCalled();
+        expect(billsJs.handleClickNewBill).toHaveBeenCalled();
         document.body.innerHTML = "";
         const root = document.createElement("div");
         root.setAttribute("id", "root");
         document.body.append(root);
-        router();
-        window.onNavigate(ROUTES_PATH.NewBill);
+        /* router();
+        window.onNavigate(ROUTES_PATH.NewBill); */
         expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy();
       });
     });

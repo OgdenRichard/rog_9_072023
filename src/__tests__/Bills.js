@@ -115,30 +115,34 @@ describe("Given I am connected as an employee", () => {
           store,
           localStorage: window.localStorage,
         });
-        jest.spyOn(billsJs, "handleClickNewBill").mockImplementationOnce(() => {
+        /* jest.spyOn(billsJs, "handleClickNewBill").mockImplementationOnce(() => {
           router();
           window.onNavigate(ROUTES_PATH.NewBill);
-        });
+        }); */
         const buttonNewBill = document.querySelector(
           `button[data-testid="btn-new-bill"]`
         );
-        console.log(buttonNewBill);
-        buttonNewBill.addEventListener("click", billsJs.handleClickNewBill);
+        // console.log(buttonNewBill);
+        const handleClickNewBill = jest.fn(billsJs.handleClickNewBill);
+        buttonNewBill.addEventListener("click", handleClickNewBill);
         userEvent.click(buttonNewBill);
-        expect(billsJs.handleClickNewBill).toHaveBeenCalled();
+        expect(handleClickNewBill).toHaveBeenCalled();
         document.body.innerHTML = "";
         const root = document.createElement("div");
         root.setAttribute("id", "root");
         document.body.append(root);
-        /* router();
-        window.onNavigate(ROUTES_PATH.NewBill); */
+        router();
+        window.onNavigate(ROUTES_PATH.NewBill);
         expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy();
       });
     });
 
     describe("When I click on the eye icon", () => {
       beforeEach(() => {
-        jQuery.fn.modal = () => {};
+        jQuery.fn.modal = () => {
+          const modal = screen.getByTestId("modaleFile");
+          modal.classList.add('show');
+        };
       });
       test("A modal should open", async () => {
         const onNavigate = (pathname) => {
@@ -158,9 +162,8 @@ describe("Given I am connected as an employee", () => {
         firstEye.addEventListener("click", handlePreviewFile(firstEye));
         userEvent.click(firstEye);
         expect(handlePreviewFile).toHaveBeenCalled();
-        // TODO tester plutot la classe hidden
         const modale = screen.getByTestId("modaleFile");
-        expect(modale).toBeTruthy();
+        expect(modale).toHaveClass('show');
       });
       afterEach(() => {
         delete jQuery.fn.modal;

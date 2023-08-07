@@ -45,7 +45,7 @@ describe("Given I am connected as an employee", () => {
       expect(billsIcon).not.toHaveClass("active-icon");
     });
 
-    test("Then the NewBill page displays a title and a form", async () => {
+    test("Then the NewBill page should display a title and a form", async () => {
       const nf = screen.getAllByText("Envoyer une note de frais");
       expect(nf).toBeTruthy();
       await waitFor(() => screen.getByTestId("form-new-bill"));
@@ -53,53 +53,60 @@ describe("Given I am connected as an employee", () => {
       expect(newBillIcon).toBeTruthy();
     });
 
-    test("Then the form displays a field for expense type which is required", async () => {
+    test("Then the form should have a field for expense type which would be required", async () => {
       await waitFor(() => screen.getByTestId("expense-type"));
       const expenseType = screen.getByTestId("expense-type");
       expect(expenseType).toBeTruthy();
       expect(expenseType.hasAttribute("required")).toBe(true);
     });
 
-    test("Then the form displays a field for expense name which is optional", async () => {
+    test("Then the form should have a field for expense name which would be optional", async () => {
       await waitFor(() => screen.getByTestId("expense-name"));
       const expenseName = screen.getByTestId("expense-name");
       expect(expenseName).toBeTruthy();
       expect(expenseName.hasAttribute("required")).toBe(false);
     });
 
-    test("Then the form displays a datepicker input which is required", async () => {
+    test("Then the form should have a datepicker input which would be required", async () => {
       await waitFor(() => screen.getByTestId("datepicker"));
       const datePicker = screen.getByTestId("datepicker");
       expect(datePicker).toBeTruthy();
       expect(datePicker.hasAttribute("required")).toBe(true);
     });
 
-    test("Then the form displays a VAT amount field which is optional", async () => {
+    test("Then the form should have a VAT amount field which would be optional", async () => {
       await waitFor(() => screen.getByTestId("vat"));
       const vatAmountField = screen.getByTestId("vat");
       expect(vatAmountField).toBeTruthy();
       expect(vatAmountField.hasAttribute("required")).toBe(false);
     });
 
-    test("Then the form displays a VAT percentage field which is required", async () => {
+    test("Then the form should have a VAT percentage field which would be required", async () => {
       await waitFor(() => screen.getByTestId("pct"));
       const vatPercentageField = screen.getByTestId("pct");
       expect(vatPercentageField).toBeTruthy();
       expect(vatPercentageField.hasAttribute("required")).toBe(true);
     });
 
-    test("Then the form displays a comment field which is optional", async () => {
+    test("Then the form should have a comment field which would be optional", async () => {
       await waitFor(() => screen.getByTestId("commentary"));
       const comments = screen.getByTestId("commentary");
       expect(comments).toBeTruthy();
       expect(comments.hasAttribute("required")).toBe(false);
     });
 
-    test("Then the form displays a file input field which is required", async () => {
+    test("Then the form should have a file input field which would be required", async () => {
       await waitFor(() => screen.getByTestId("file"));
       const fileInput = screen.getByTestId("file");
       expect(fileInput).toBeTruthy();
       expect(fileInput.hasAttribute("required")).toBe(true);
+    });
+
+    test("Then the form should have a submit button", async () => {
+      await waitFor(() => screen.getByTestId("btn-send-bill"));
+      const submitButton = screen.getByTestId("btn-send-bill");
+      expect(submitButton).toBeTruthy();
+      expect(submitButton.getAttribute("type")).toEqual("submit");
     });
   });
 });

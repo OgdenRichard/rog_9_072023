@@ -42,11 +42,7 @@ describe("Given I am connected as an employee", () => {
       expect(newBillIcon).toHaveClass("active-icon");
       await waitFor(() => screen.getByTestId("icon-window"));
       const billsIcon = screen.getByTestId("icon-window");
-      //
       expect(billsIcon).not.toHaveClass("active-icon");
-      await waitFor(() => {
-        screen.getAllByText("Envoyer une note de frais");
-      });
     });
 
     test("Then the NewBill page displays a title and a form", async () => {

@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import "@testing-library/jest-dom";
-import { screen, waitFor, fireEvent } from "@testing-library/dom";
+import { screen, waitFor, fireEvent, wait } from "@testing-library/dom";
 import NewBillUI from "../views/NewBillUI.js";
 import NewBill from "../containers/NewBill.js";
 import { ROUTES } from "../constants/routes";
@@ -122,7 +122,7 @@ describe("Given I am connected as an employee", () => {
           store,
           localStorage: window.localStorage,
         });
-        jest.spyOn(newBill, "updateBill").mockImplementation(() => {});
+        jest.spyOn(newBill, "updateBill").mockImplementationOnce(() => {});
         const submitButton = document.querySelector(
           `button[data-testid="btn-send-bill"]`
         );
@@ -135,6 +135,56 @@ describe("Given I am connected as an employee", () => {
         userEvent.click(submitButton);
         expect(handleSubmit).toHaveBeenCalled();
         expect(screen.getAllByText("Mes notes de frais")).toBeTruthy();
+      });
+    });
+
+    describe("When I add a new file in input file", () => {
+      it("Should resolve a promise whith an object containing fileUrl and key properties", async () => {
+        const root = document.createElement("div");
+        root.setAttribute("id", "root");
+        document.body.append(root);
+        router();
+        window.onNavigate(ROUTES_PATH.NewBill);
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname });
+        };
+        const store = mockStore;
+        const newBill = new NewBill({
+          document,
+          onNavigate,
+          store,
+          localStorage: window.localStorage,
+        });
+        window.alert = jest.fn();
+        /* jest.spyOn(mockStore, "bills").mockImplementationOnce(() => {
+          const data = {
+            create() {
+              return Promise.resolve([
+                {
+                  fileUrl: "https://localhost:3456/images/test.jpg",
+                  key: "1234",
+                },
+              ]);
+            },
+          };
+          return data;
+        }); */
+        const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
+        const file = new File(["hello"], "hello.gif", { type: "image/gif" });
+        const fileInput = document.querySelector(`input[data-testid="file"]`);
+        //userEvent.upload(fileInput, file);
+        //console.log(fileInput.files[0]);
+
+        fileInput.addEventListener("change", handleChangeFile);
+        userEvent.upload(fileInput, file);
+        //await waitFor(() => fireEvent.change(fileInput));
+        //await waitFor(() => userEvent.upload(fileInput, file));
+        // expect.assertions(1);
+        /* const url = await newBill.fileUrl;
+        console.log(url); */
+        expect(fileInput.files[0]).toStrictEqual(file);
+        expect(fileInput.files.item(0)).toStrictEqual(file);
+        expect(fileInput.files).toHaveLength(1);
       });
     });
   });

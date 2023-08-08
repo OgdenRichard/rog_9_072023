@@ -34,6 +34,7 @@ describe("Given I am connected as an employee", () => {
     );
   });
 
+  // TODO cleanup before/after each - all
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
       const root = document.createElement("div");
@@ -104,7 +105,6 @@ describe("Given I am connected as an employee", () => {
       });
 
       test("Then I shoud be redirected to NewBill page", () => {
-        // TODO voir vraie redirection on click
         const onNavigate = (pathname) => {
           document.body.innerHTML = ROUTES({ pathname });
         };
@@ -115,33 +115,29 @@ describe("Given I am connected as an employee", () => {
           store,
           localStorage: window.localStorage,
         });
-        /* jest.spyOn(billsJs, "handleClickNewBill").mockImplementationOnce(() => {
-          router();
-          window.onNavigate(ROUTES_PATH.NewBill);
-        }); */
         const buttonNewBill = document.querySelector(
           `button[data-testid="btn-new-bill"]`
         );
-        // console.log(buttonNewBill);
-        const handleClickNewBill = jest.fn(billsJs.handleClickNewBill);
+        const handleClickNewBill = jest.fn((e) =>
+          billsJs.handleClickNewBill(e)
+        );
         buttonNewBill.addEventListener("click", handleClickNewBill);
         userEvent.click(buttonNewBill);
         expect(handleClickNewBill).toHaveBeenCalled();
-        document.body.innerHTML = "";
-        const root = document.createElement("div");
-        root.setAttribute("id", "root");
-        document.body.append(root);
-        router();
-        window.onNavigate(ROUTES_PATH.NewBill);
         expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy();
+      });
+
+      afterAll(() => {
+        document.body.innerHTML = "";
       });
     });
 
     describe("When I click on the eye icon", () => {
       beforeEach(() => {
+        document.body.innerHTML = BillsUI({ data: bills });
         jQuery.fn.modal = () => {
           const modal = screen.getByTestId("modaleFile");
-          modal.classList.add('show');
+          modal.classList.add("show");
         };
       });
       test("A modal should open", async () => {
@@ -163,7 +159,7 @@ describe("Given I am connected as an employee", () => {
         userEvent.click(firstEye);
         expect(handlePreviewFile).toHaveBeenCalled();
         const modale = screen.getByTestId("modaleFile");
-        expect(modale).toHaveClass('show');
+        expect(modale).toHaveClass("show");
       });
       afterEach(() => {
         delete jQuery.fn.modal;

@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import "@testing-library/jest-dom";
-import { screen, waitFor } from "@testing-library/dom";
+import { screen, waitFor, fireEvent } from "@testing-library/dom";
 import NewBillUI from "../views/NewBillUI.js";
 import NewBill from "../containers/NewBill.js";
 import { ROUTES } from "../constants/routes";
@@ -23,6 +23,7 @@ describe("Given I am connected as an employee", () => {
       "user",
       JSON.stringify({
         type: "Employee",
+        email: "test@test.test",
       })
     );
   });
@@ -107,6 +108,34 @@ describe("Given I am connected as an employee", () => {
       const submitButton = screen.getByTestId("btn-send-bill");
       expect(submitButton).toBeTruthy();
       expect(submitButton.getAttribute("type")).toEqual("submit");
+    });
+
+    describe("When I have filled all the required inputs and I click on the submit button", () => {
+      test("Then I should be redirected to Bills page", () => {
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname });
+        };
+        const store = null;
+        const newBill = new NewBill({
+          document,
+          onNavigate,
+          store,
+          localStorage: window.localStorage,
+        });
+        jest.spyOn(newBill, "updateBill").mockImplementation(() => {});
+        const submitButton = document.querySelector(
+          `button[data-testid="btn-send-bill"]`
+        );
+        const form = document.querySelector(
+          `form[data-testid="form-new-bill"]`
+        );
+        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+        form.addEventListener("submit", handleSubmit);
+        submitButton.addEventListener("click", () => fireEvent.submit(form));
+        userEvent.click(submitButton);
+        expect(handleSubmit).toHaveBeenCalled();
+        expect(screen.getAllByText("Mes notes de frais")).toBeTruthy();
+      });
     });
   });
 });

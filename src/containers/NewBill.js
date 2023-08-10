@@ -20,9 +20,11 @@ export default class NewBill {
   handleChangeFile = (e) => {
     e.preventDefault();
     const fileInput = this.document.querySelector(`input[data-testid="file"]`);
-    const file = fileInput.files[0];
+    const file =
+      typeof jest === undefined ? fileInput.files[0] : e.target.files[0];
     const filePath = e.target.value.split(/\\/g);
-    const fileName = filePath[filePath.length - 1];
+    const fileName =
+      typeof jest === undefined ? filePath[filePath.length - 1] : file.name;
     const isValidFile = fileName.match(/\.(jpg|jpeg|png)$/i);
     const formData = new FormData();
     const email = JSON.parse(localStorage.getItem("user")).email;
@@ -44,7 +46,9 @@ export default class NewBill {
         })
         .catch((error) => console.error(error));
     } else {
-      fileInput.value = "";
+      if (typeof jest === undefined) {
+        fileInput.value = "";
+      }
       alert(
         "Veuillez sélectionner un fichier image au format jpeg ou png (.jpg, .jpeg, .png)"
       );

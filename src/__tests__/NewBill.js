@@ -169,6 +169,41 @@ describe("Given I am connected as an employee", () => {
         });
         expect(newBill.fileUrl).not.toBe(null);
       });
+
+      /* describe("When an error occurs on API", () => {
+        beforeEach(() => {
+          jest.spyOn(mockStore, "bills");
+          Object.defineProperty(window, "localStorage", {
+            value: localStorageMock,
+          });
+          window.localStorage.setItem(
+            "user",
+            JSON.stringify({
+              type: "Employee",
+              email: "test@test.test",
+            })
+          );
+          const root = document.createElement("div");
+          root.setAttribute("id", "root");
+          document.body.appendChild(root);
+          router();
+          // window.onNavigate(ROUTES_PATH.NewBill);
+        });
+        test("sends file with API and fails with 404 message error", async () => {
+          mockStore.bills.mockImplementationOnce(() => {
+            return {
+              create: () => {
+                return Promise.reject(new Error("Erreur 404"));
+              },
+            };
+          });
+          await waitFor(() => new Promise(process.nextTick));
+          window.onNavigate(ROUTES_PATH.NewBill);
+          const message = await screen.getByText(/Erreur 404/);
+          // expect(console.error).toHaveBeenCalled();
+          expect(message).toBeTruthy();
+        });
+      }); */
     });
   });
 });

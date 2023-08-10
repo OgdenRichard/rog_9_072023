@@ -137,73 +137,95 @@ describe("Given I am connected as an employee", () => {
         expect(screen.getAllByText("Mes notes de frais")).toBeTruthy();
       });
     });
+  });
+});
 
-    describe("When I add a new file in input file", () => {
-      it("Should resolve a promise whith an object containing fileUrl and key properties", async () => {
-        const root = document.createElement("div");
-        root.setAttribute("id", "root");
-        document.body.append(root);
-        router();
-        window.onNavigate(ROUTES_PATH.NewBill);
-        const onNavigate = (pathname) => {
-          document.body.innerHTML = ROUTES({ pathname });
-        };
-        const store = mockStore;
-        const newBill = new NewBill({
-          document,
-          onNavigate,
-          store,
-          localStorage: window.localStorage,
-        });
-        window.alert = jest.fn();
-        const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
-        const file = new File(["hello"], "hello.png", { type: "image/png" });
-        const fileInput = document.querySelector(`input[data-testid="file"]`);
-        fileInput.addEventListener("change", handleChangeFile);
-        await waitFor(() => {
-          fireEvent.change(fileInput, {
-            target: {
-              files: [file],
-            },
-          });
-        });
-        expect(newBill.fileUrl).not.toBe(null);
+// tests intégration POST
+describe("Given I am connected as an employee", () => {
+  describe("When I upload a new file and the file is an image", () => {
+    it("Should send the file through API POST method", async () => {
+      const root = document.createElement("div");
+      root.setAttribute("id", "root");
+      document.body.append(root);
+      router();
+      window.onNavigate(ROUTES_PATH.NewBill);
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+      const store = mockStore;
+      const newBill = new NewBill({
+        document,
+        onNavigate,
+        store,
+        localStorage: window.localStorage,
       });
+      window.alert = jest.fn();
+      const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
+      const file = new File(["hello"], "hello.png", { type: "image/png" });
+      const fileInput = document.querySelector(`input[data-testid="file"]`);
+      fileInput.addEventListener("change", handleChangeFile);
+      await waitFor(() => {
+        fireEvent.change(fileInput, {
+          target: {
+            files: [file],
+          },
+        });
+      });
+      expect(newBill.fileUrl).not.toBe(null);
+      const message = await screen.getByText('Envoyer une note de frais');
+      expect(message).toBeTruthy();
+    });
+  });
 
-      /* describe("When an error occurs on API", () => {
-        beforeEach(() => {
-          jest.spyOn(mockStore, "bills");
-          Object.defineProperty(window, "localStorage", {
-            value: localStorageMock,
-          });
-          window.localStorage.setItem(
-            "user",
-            JSON.stringify({
-              type: "Employee",
-              email: "test@test.test",
-            })
-          );
-          const root = document.createElement("div");
-          root.setAttribute("id", "root");
-          document.body.appendChild(root);
-          router();
-          // window.onNavigate(ROUTES_PATH.NewBill);
+  describe("When an error occurs on API", () => {
+    test("sends file with API and fails with 404 message error", async () => {
+      jest.spyOn(mockStore, "bills");
+      Object.defineProperty(window, "localStorage", {
+        value: localStorageMock,
+      });
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          type: "Employee",
+          email: "test@test.test",
+        })
+      );
+      const root = document.createElement("div");
+      root.setAttribute("id", "root");
+      document.body.appendChild(root);
+      router();
+      window.onNavigate(ROUTES_PATH.NewBill);
+      mockStore.bills.mockImplementationOnce(() => {
+        return {
+          create: () => {
+            return Promise.reject(new Error("Erreur 404"));
+          },
+        };
+      });
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+      const store = mockStore;
+      const newBill = new NewBill({
+        document,
+        onNavigate,
+        store,
+        localStorage: window.localStorage,
+      });
+      window.alert = jest.fn();
+      const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
+      const file = new File(["hello"], "hello.png", { type: "image/png" });
+      const fileInput = document.querySelector(`input[data-testid="file"]`);
+      fileInput.addEventListener("change", handleChangeFile);
+      await waitFor(() => {
+        fireEvent.change(fileInput, {
+          target: {
+            files: [file],
+          },
         });
-        test("sends file with API and fails with 404 message error", async () => {
-          mockStore.bills.mockImplementationOnce(() => {
-            return {
-              create: () => {
-                return Promise.reject(new Error("Erreur 404"));
-              },
-            };
-          });
-          await waitFor(() => new Promise(process.nextTick));
-          window.onNavigate(ROUTES_PATH.NewBill);
-          const message = await screen.getByText(/Erreur 404/);
-          // expect(console.error).toHaveBeenCalled();
-          expect(message).toBeTruthy();
-        });
-      }); */
+      });
+      const message = await screen.getByText(/Erreur 404/);
+      expect(message).toBeTruthy();
     });
   });
 });

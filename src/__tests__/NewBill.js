@@ -156,35 +156,18 @@ describe("Given I am connected as an employee", () => {
           localStorage: window.localStorage,
         });
         window.alert = jest.fn();
-        /* jest.spyOn(mockStore, "bills").mockImplementationOnce(() => {
-          const data = {
-            create() {
-              return Promise.resolve([
-                {
-                  fileUrl: "https://localhost:3456/images/test.jpg",
-                  key: "1234",
-                },
-              ]);
-            },
-          };
-          return data;
-        }); */
         const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
-        const file = new File(["hello"], "hello.gif", { type: "image/gif" });
+        const file = new File(["hello"], "hello.png", { type: "image/png" });
         const fileInput = document.querySelector(`input[data-testid="file"]`);
-        //userEvent.upload(fileInput, file);
-        //console.log(fileInput.files[0]);
-
         fileInput.addEventListener("change", handleChangeFile);
-        userEvent.upload(fileInput, file);
-        //await waitFor(() => fireEvent.change(fileInput));
-        //await waitFor(() => userEvent.upload(fileInput, file));
-        // expect.assertions(1);
-        /* const url = await newBill.fileUrl;
-        console.log(url); */
-        expect(fileInput.files[0]).toStrictEqual(file);
-        expect(fileInput.files.item(0)).toStrictEqual(file);
-        expect(fileInput.files).toHaveLength(1);
+        await waitFor(() => {
+          fireEvent.change(fileInput, {
+            target: {
+              files: [file],
+            },
+          });
+        });
+        expect(newBill.fileUrl).not.toBe(null);
       });
     });
   });

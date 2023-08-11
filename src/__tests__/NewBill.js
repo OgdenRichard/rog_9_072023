@@ -178,7 +178,30 @@ describe("Given I am connected as an employee", () => {
   });
 
   describe("When an error occurs on API", () => {
-    test("sends file with API and fails with 404 message error", async () => {
+    beforeEach(() => {
+      jest.spyOn(mockStore, "bills");
+      Object.defineProperty(window, "localStorage", {
+        value: localStorageMock,
+      });
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          type: "Employee",
+          email: "test@test.test",
+        })
+      );
+      const root = document.createElement("div");
+      root.setAttribute("id", "root");
+      document.body.appendChild(root);
+      router();
+      window.onNavigate(ROUTES_PATH.NewBill);
+    });
+
+    afterEach(() => {
+      document.body.innerHTML = "";
+    });
+
+    it("Should send file with API POST method and fails with 404 message error", async () => {
       jest.spyOn(mockStore, "bills");
       Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
@@ -227,6 +250,42 @@ describe("Given I am connected as an employee", () => {
       await waitFor(() => launchApiPost());
       const message = screen.getByTestId("error-msg");
       expect(message.textContent).toEqual("Error: Erreur 404");
+      document.innerHTML = "";
+    });
+
+    it("Should send file with API POST method and fails with 500 message error", async () => {
+      mockStore.bills.mockImplementationOnce(() => {
+        return {
+          create: () => {
+            return Promise.reject(new Error("Erreur 500"));
+          },
+        };
+      });
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+      const store = mockStore;
+      const newBill = new NewBill({
+        document,
+        onNavigate,
+        store,
+        localStorage: window.localStorage,
+      });
+      window.alert = jest.fn();
+      const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
+      const file = new File(["hello"], "hello.png", { type: "image/png" });
+      const fileInput = document.querySelector(`input[data-testid="file"]`);
+      fileInput.addEventListener("change", handleChangeFile);
+      const launchApiPost = async () => {
+        fireEvent.change(fileInput, {
+          target: {
+            files: [file],
+          },
+        });
+      };
+      await waitFor(() => launchApiPost());
+      const message = screen.getByTestId("error-msg");
+      expect(message.textContent).toEqual("Error: Erreur 500");
     });
   });
 });

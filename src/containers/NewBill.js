@@ -41,9 +41,12 @@ export default class NewBill {
           this.fileName = fileName;
         })
         .catch((error) => {
+          console.log("in container");
           const header = this.document.querySelector(".content-header");
           const errorElement = this.document.createElement("h2");
-          errorElement.innerText = `${error}`;
+          errorElement.setAttribute('data-testid','testerror')
+          errorElement.textContent = `${error}`;
+          console.log(`in container : ${error}`);
           // console.log(errorElement);
           header.appendChild(errorElement);
         });

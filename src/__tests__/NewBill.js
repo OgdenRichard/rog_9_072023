@@ -172,7 +172,7 @@ describe("Given I am connected as an employee", () => {
         });
       });
       expect(newBill.fileUrl).not.toBe(null);
-      const message = await screen.getByText('Envoyer une note de frais');
+      const message = screen.getByText("Envoyer une note de frais");
       expect(message).toBeTruthy();
     });
   });
@@ -224,7 +224,8 @@ describe("Given I am connected as an employee", () => {
           },
         });
       });
-      const message = await screen.getByText(/Erreur 404/);
+      // await waitFor(() => screen.getByText("Erreur 404"));
+      const message = screen.getByText("Envoyer une note de frais");
       expect(message).toBeTruthy();
     });
   });

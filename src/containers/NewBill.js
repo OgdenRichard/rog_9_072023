@@ -1,4 +1,4 @@
-import { ROUTES_PATH } from "../constants/routes.js";
+import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import Logout from "./Logout.js";
 
 export default class NewBill {
@@ -40,7 +40,13 @@ export default class NewBill {
           this.fileUrl = fileUrl;
           this.fileName = fileName;
         })
-        .catch((error) => console.error(error));
+        .catch((error) => {
+          const header = this.document.querySelector(".content-header");
+          const errorElement = this.document.createElement("h2");
+          errorElement.innerText = `${error}`;
+          // console.log(errorElement);
+          header.appendChild(errorElement);
+        });
     } else {
       e.target.value = "";
       alert(

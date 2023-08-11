@@ -41,13 +41,10 @@ export default class NewBill {
           this.fileName = fileName;
         })
         .catch((error) => {
-          console.log("in container");
           const header = this.document.querySelector(".content-header");
           const errorElement = this.document.createElement("h2");
-          errorElement.setAttribute('data-testid','testerror')
+          errorElement.setAttribute('data-testid','error-msg')
           errorElement.textContent = `${error}`;
-          console.log(`in container : ${error}`);
-          // console.log(errorElement);
           header.appendChild(errorElement);
         });
     } else {
@@ -59,10 +56,10 @@ export default class NewBill {
   };
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log(
+    /* console.log(
       'e.target.querySelector(`input[data-testid="datepicker"]`).value',
       e.target.querySelector(`input[data-testid="datepicker"]`).value
-    );
+    ); */
     const email = JSON.parse(localStorage.getItem("user")).email;
     const bill = {
       email,

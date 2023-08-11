@@ -217,16 +217,16 @@ describe("Given I am connected as an employee", () => {
       const file = new File(["hello"], "hello.png", { type: "image/png" });
       const fileInput = document.querySelector(`input[data-testid="file"]`);
       fileInput.addEventListener("change", handleChangeFile);
-      const tryout = async () => {
+      const launchApiPost = async () => {
         fireEvent.change(fileInput, {
           target: {
             files: [file],
           },
         });
       };
-      await waitFor(() => tryout());
-      const message = screen.getByTestId('testerror');
-      expect(message.textContent).toEqual('Error: Erreur 404');
+      await waitFor(() => launchApiPost());
+      const message = screen.getByTestId("error-msg");
+      expect(message.textContent).toEqual("Error: Erreur 404");
     });
   });
 });

@@ -113,39 +113,11 @@ describe("Given I am connected as an employee", () => {
       expect(submitButton).toBeTruthy();
       expect(submitButton.getAttribute("type")).toEqual("submit");
     });
-
-    describe("When I have filled all the required inputs and I click on the submit button", () => {
-      test("Then I should be redirected to Bills page", () => {
-        const onNavigate = (pathname) => {
-          document.body.innerHTML = ROUTES({ pathname });
-        };
-        const store = null;
-        const newBill = new NewBill({
-          document,
-          onNavigate,
-          store,
-          localStorage: window.localStorage,
-        });
-        jest.spyOn(newBill, "updateBill").mockImplementationOnce(() => {});
-        const submitButton = document.querySelector(
-          `button[data-testid="btn-send-bill"]`
-        );
-        const form = document.querySelector(
-          `form[data-testid="form-new-bill"]`
-        );
-        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
-        form.addEventListener("submit", handleSubmit);
-        submitButton.addEventListener("click", () => fireEvent.submit(form));
-        userEvent.click(submitButton);
-        expect(handleSubmit).toHaveBeenCalled();
-        expect(screen.getAllByText("Mes notes de frais")).toBeTruthy();
-      });
-    });
   });
 });
 
-// tests intégration POST
 describe("Given I am connected as an employee", () => {
+  // tests intégration POST
   describe("When I upload a new file and the file is an image", () => {
     it("Should send the file through API POST method", async () => {
       const root = document.createElement("div");
@@ -181,7 +153,7 @@ describe("Given I am connected as an employee", () => {
     });
   });
 
-  describe("When an error occurs on API", () => {
+  describe("When an error occurs on API using POST method", () => {
     beforeEach(() => {
       jest.spyOn(mockStore, "bills");
       Object.defineProperty(window, "localStorage", {
@@ -205,7 +177,7 @@ describe("Given I am connected as an employee", () => {
       document.body.innerHTML = "";
     });
 
-    it("Should send file with API POST method and fails with 404 message error", async () => {
+    it("Should send file with API POST method and fail with 404 message error", async () => {
       jest.spyOn(mockStore, "bills");
       mockStore.bills.mockImplementationOnce(() => {
         return {
@@ -275,6 +247,38 @@ describe("Given I am connected as an employee", () => {
       await waitFor(() => launchApiPost());
       const message = screen.getByTestId("error-msg");
       expect(message.textContent).toEqual("Error: Erreur 500");
+    });
+  });
+
+  // tests intégration PATCH
+  describe("When I have filled all the required inputs and I click on the submit button", () => {
+    test("Then I should be redirected to Bills page", async () => {
+      const root = document.createElement("div");
+      root.setAttribute("id", "root");
+      document.body.append(root);
+      router();
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+      const store = mockStore;
+      const newBill = new NewBill({
+        document,
+        onNavigate,
+        store,
+        localStorage: window.localStorage,
+      });
+      const submitButton = document.querySelector(
+        `button[data-testid="btn-send-bill"]`
+      );
+      const form = document.querySelector(`form[data-testid="form-new-bill"]`);
+      const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+      form.addEventListener("submit", handleSubmit);
+      submitButton.addEventListener("click", () => fireEvent.submit(form));
+      userEvent.click(submitButton);
+      expect(handleSubmit).toHaveBeenCalled();
+      await waitFor(() => screen.getByText("Mes notes de frais"));
+      const billsTitle = screen.getByText("Mes notes de frais");
+      expect(billsTitle).toBeTruthy();
     });
   });
 });

@@ -74,7 +74,9 @@ export default class NewBill {
       status: "pending",
     };
     this.updateBill(bill);
-    // this.onNavigate(ROUTES_PATH["Bills"]);
+    if (typeof jest === "undefined") {
+      this.onNavigate(ROUTES_PATH["Bills"]);
+    }
   };
 
   // not need to cover this function by tests

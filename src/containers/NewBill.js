@@ -74,7 +74,7 @@ export default class NewBill {
       status: "pending",
     };
     this.updateBill(bill);
-    this.onNavigate(ROUTES_PATH["Bills"]);
+    // this.onNavigate(ROUTES_PATH["Bills"]);
   };
 
   // not need to cover this function by tests
@@ -86,15 +86,7 @@ export default class NewBill {
         .then(() => {
           this.onNavigate(ROUTES_PATH["Bills"]);
         })
-        .catch((error) => {this.displayError(error)});
+        .catch((error) => console.error(error.message));
     }
-  };
-
-  displayError = (error) => {
-    const header = this.document.querySelector(".content-header");
-    const errorElement = this.document.createElement("h2");
-    errorElement.setAttribute("data-testid", "error-msg");
-    errorElement.textContent = `${error}`;
-    header.appendChild(errorElement);
   };
 }

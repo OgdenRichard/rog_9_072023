@@ -166,7 +166,7 @@ describe("Given I am connected as an employee", () => {
       mockStore.bills.mockImplementationOnce(() => {
         return {
           create: () => {
-            return Promise.reject(new Error("Erreur 404"));
+            return Promise.reject(new Error("POST method - Erreur 404"));
           },
         };
       });
@@ -195,7 +195,7 @@ describe("Given I am connected as an employee", () => {
       await waitFor(() => launchApiPost());
       expect(errorSpy).toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledTimes(1);
-      expect(errorSpy).toHaveBeenCalledWith("Erreur 404");
+      expect(errorSpy).toHaveBeenCalledWith("POST method - Erreur 404");
       spy.mockRestore();
       errorSpy.mockRestore();
     });
@@ -206,7 +206,7 @@ describe("Given I am connected as an employee", () => {
       mockStore.bills.mockImplementationOnce(() => {
         return {
           create: () => {
-            return Promise.reject(new Error("Erreur 500"));
+            return Promise.reject(new Error("POST method - Erreur 500"));
           },
         };
       });
@@ -235,7 +235,7 @@ describe("Given I am connected as an employee", () => {
       await waitFor(() => launchApiPost());
       expect(errorSpy).toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledTimes(1);
-      expect(errorSpy).toHaveBeenCalledWith("Erreur 500");
+      expect(errorSpy).toHaveBeenCalledWith("POST method - Erreur 500");
       spy.mockRestore();
       errorSpy.mockRestore();
     });
@@ -273,7 +273,7 @@ describe("Given I am connected as an employee", () => {
       document.body.innerHTML = "";
     });
 
-    describe("When an error occurs on API using POST method", () => {
+    describe("When an error occurs on API using PATCH method", () => {
       beforeEach(() => {
         Object.defineProperty(window, "localStorage", {
           value: localStorageMock,
@@ -297,10 +297,11 @@ describe("Given I am connected as an employee", () => {
         router();
         window.onNavigate(ROUTES_PATH.NewBill);
         const spy = jest.spyOn(mockStore, "bills");
+        const errorSpy = jest.spyOn(console, "error");
         mockStore.bills.mockImplementationOnce(() => {
           return {
             update: () => {
-              return Promise.reject(new Error("Erreur 404"));
+              return Promise.reject(new Error("PATCH method - Erreur 404"));
             },
           };
         });
@@ -323,24 +324,26 @@ describe("Given I am connected as an employee", () => {
         const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
         form.addEventListener("submit", handleSubmit);
         submitButton.addEventListener("click", () => fireEvent.submit(form));
-        userEvent.click(submitButton);
-        await waitFor(() => screen.getByTestId("error-msg"));
-        const message = screen.getByTestId("error-msg");
-        expect(message.textContent).toEqual("Error: Erreur 404");
-        spy.mockRestore()
+        await waitFor(async () => userEvent.click(submitButton));
+        expect(errorSpy).toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledTimes(1);
+        expect(errorSpy).toHaveBeenCalledWith("PATCH method - Erreur 404");
+        spy.mockRestore();
+        errorSpy.mockRestore();
       });
 
-      /* it("Should send file with API POST method and fail with 500 error message", async () => {
+      it("Should send file with API POST method and fail with 500 error message", async () => {
         const root = document.createElement("div");
         root.setAttribute("id", "root");
         document.body.appendChild(root);
         router();
         window.onNavigate(ROUTES_PATH.NewBill);
         const spy = jest.spyOn(mockStore, "bills");
+        const errorSpy = jest.spyOn(console, "error");
         mockStore.bills.mockImplementationOnce(() => {
           return {
             update: () => {
-              return Promise.reject(new Error("Erreur 500"));
+              return Promise.reject(new Error("PATCH method - Erreur 500"));
             },
           };
         });
@@ -363,12 +366,13 @@ describe("Given I am connected as an employee", () => {
         const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
         form.addEventListener("submit", handleSubmit);
         submitButton.addEventListener("click", () => fireEvent.submit(form));
-        userEvent.click(submitButton);
-        await waitFor(() => screen.getByTestId("error-msg"));
-        const message = screen.getByTestId("error-msg");
-        expect(message.textContent).toEqual("Error: Erreur 500");
+        await waitFor(async () => userEvent.click(submitButton));
+        expect(errorSpy).toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledTimes(1);
+        expect(errorSpy).toHaveBeenCalledWith("PATCH method - Erreur 500");
         spy.mockRestore();
-      }); */
+        errorSpy.mockRestore();
+      });
     });
   });
 });

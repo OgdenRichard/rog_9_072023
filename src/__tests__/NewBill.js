@@ -29,12 +29,16 @@ describe("Given I am connected as an employee", () => {
   });
 
   describe("When I am on NewBill Page", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       const root = document.createElement("div");
       root.setAttribute("id", "root");
       document.body.append(root);
       router();
       window.onNavigate(ROUTES_PATH.NewBill);
+    });
+
+    afterEach(() => {
+      document.body.innerHTML = "";
     });
 
     test("Then the New Bill icon in vertical layout should be highlighted", async () => {
@@ -203,21 +207,6 @@ describe("Given I am connected as an employee", () => {
 
     it("Should send file with API POST method and fails with 404 message error", async () => {
       jest.spyOn(mockStore, "bills");
-      Object.defineProperty(window, "localStorage", {
-        value: localStorageMock,
-      });
-      window.localStorage.setItem(
-        "user",
-        JSON.stringify({
-          type: "Employee",
-          email: "test@test.test",
-        })
-      );
-      const root = document.createElement("div");
-      root.setAttribute("id", "root");
-      document.body.appendChild(root);
-      router();
-      window.onNavigate(ROUTES_PATH.NewBill);
       mockStore.bills.mockImplementationOnce(() => {
         return {
           create: () => {

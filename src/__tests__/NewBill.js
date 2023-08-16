@@ -155,7 +155,6 @@ describe("Given I am connected as an employee", () => {
 
   describe("When an error occurs on API using POST method", () => {
     beforeEach(() => {
-      jest.spyOn(mockStore, "bills");
       Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
       });
@@ -177,8 +176,8 @@ describe("Given I am connected as an employee", () => {
       document.body.innerHTML = "";
     });
 
-    it("Should send file with API POST method and fail with 404 message error", async () => {
-      jest.spyOn(mockStore, "bills");
+    it("Should send file with API POST method and fail with 404 error message", async () => {
+      const spy = jest.spyOn(mockStore, "bills");
       mockStore.bills.mockImplementationOnce(() => {
         return {
           create: () => {
@@ -212,9 +211,11 @@ describe("Given I am connected as an employee", () => {
       const message = screen.getByTestId("error-msg");
       expect(message.textContent).toEqual("Error: Erreur 404");
       document.innerHTML = "";
+      spy.mockRestore();
     });
 
-    it("Should send file with API POST method and fails with 500 message error", async () => {
+    it("Should send file with API POST method and fail with 500  error message", async () => {
+      const spy = jest.spyOn(mockStore, "bills");
       mockStore.bills.mockImplementationOnce(() => {
         return {
           create: () => {
@@ -247,6 +248,7 @@ describe("Given I am connected as an employee", () => {
       await waitFor(() => launchApiPost());
       const message = screen.getByTestId("error-msg");
       expect(message.textContent).toEqual("Error: Erreur 500");
+      spy.mockRestore();
     });
   });
 
@@ -279,6 +281,105 @@ describe("Given I am connected as an employee", () => {
       await waitFor(() => screen.getByText("Mes notes de frais"));
       const billsTitle = screen.getByText("Mes notes de frais");
       expect(billsTitle).toBeTruthy();
+      document.body.innerHTML = "";
+    });
+
+    describe("When an error occurs on API using POST method", () => {
+      beforeEach(() => {
+        Object.defineProperty(window, "localStorage", {
+          value: localStorageMock,
+        });
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({
+            type: "Employee",
+            email: "test@test.test",
+          })
+        );
+      });
+      afterEach(() => {
+        document.body.innerHTML = "";
+      });
+
+      it("Should send file with API PATCH method and fail with 404 error message", async () => {
+        const root = document.createElement("div");
+        root.setAttribute("id", "root");
+        document.body.appendChild(root);
+        router();
+        window.onNavigate(ROUTES_PATH.NewBill);
+        const spy = jest.spyOn(mockStore, "bills");
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            update: () => {
+              return Promise.reject(new Error("Erreur 404"));
+            },
+          };
+        });
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname });
+        };
+        const store = mockStore;
+        const newBill = new NewBill({
+          document,
+          onNavigate,
+          store,
+          localStorage: window.localStorage,
+        });
+        const submitButton = document.querySelector(
+          `button[data-testid="btn-send-bill"]`
+        );
+        const form = document.querySelector(
+          `form[data-testid="form-new-bill"]`
+        );
+        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+        form.addEventListener("submit", handleSubmit);
+        submitButton.addEventListener("click", () => fireEvent.submit(form));
+        userEvent.click(submitButton);
+        await waitFor(() => screen.getByTestId("error-msg"));
+        const message = screen.getByTestId("error-msg");
+        expect(message.textContent).toEqual("Error: Erreur 404");
+        spy.mockRestore();
+      });
+
+      it("Should send file with API POST method and fail with 500 error message", async () => {
+        const root = document.createElement("div");
+        root.setAttribute("id", "root");
+        document.body.appendChild(root);
+        router();
+        window.onNavigate(ROUTES_PATH.NewBill);
+        const spy = jest.spyOn(mockStore, "bills");
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            update: () => {
+              return Promise.reject(new Error("Erreur 500"));
+            },
+          };
+        });
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname });
+        };
+        const store = mockStore;
+        const newBill = new NewBill({
+          document,
+          onNavigate,
+          store,
+          localStorage: window.localStorage,
+        });
+        const submitButton = document.querySelector(
+          `button[data-testid="btn-send-bill"]`
+        );
+        const form = document.querySelector(
+          `form[data-testid="form-new-bill"]`
+        );
+        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+        form.addEventListener("submit", handleSubmit);
+        submitButton.addEventListener("click", () => fireEvent.submit(form));
+        userEvent.click(submitButton);
+        await waitFor(() => screen.getByTestId("error-msg"));
+        const message = screen.getByTestId("error-msg");
+        expect(message.textContent).toEqual("Error: Erreur 500");
+        spy.mockRestore();
+      });
     });
   });
 });

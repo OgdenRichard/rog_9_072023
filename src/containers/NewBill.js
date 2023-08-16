@@ -92,7 +92,14 @@ export default class NewBill {
         .then(() => {
           this.onNavigate(ROUTES_PATH["Bills"]);
         })
-        .catch((error) => console.error(error));
+        .catch((error) => {
+          const header = this.document.querySelector(".content-header");
+          const errorElement = this.document.createElement("h2");
+          errorElement.setAttribute('data-testid','error-msg')
+          errorElement.textContent = `${error}`;
+          header.appendChild(errorElement);
+        });
+        // .catch((error) => console.error(error));
     }
   };
 }

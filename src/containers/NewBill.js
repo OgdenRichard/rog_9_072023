@@ -40,9 +40,7 @@ export default class NewBill {
           this.fileUrl = fileUrl;
           this.fileName = fileName;
         })
-        .catch((error) => {
-          this.displayError(error);
-        });
+        .catch((error) => console.error(error.message));
     } else {
       e.target.value = "";
       alert(
@@ -88,9 +86,7 @@ export default class NewBill {
         .then(() => {
           this.onNavigate(ROUTES_PATH["Bills"]);
         })
-        .catch((error) => {
-          this.displayError(error);
-        });
+        .catch((error) => {this.displayError(error)});
     }
   };
 

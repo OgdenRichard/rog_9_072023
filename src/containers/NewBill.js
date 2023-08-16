@@ -41,11 +41,7 @@ export default class NewBill {
           this.fileName = fileName;
         })
         .catch((error) => {
-          const header = this.document.querySelector(".content-header");
-          const errorElement = this.document.createElement("h2");
-          errorElement.setAttribute('data-testid','error-msg')
-          errorElement.textContent = `${error}`;
-          header.appendChild(errorElement);
+          this.displayError(error);
         });
     } else {
       e.target.value = "";
@@ -93,13 +89,16 @@ export default class NewBill {
           this.onNavigate(ROUTES_PATH["Bills"]);
         })
         .catch((error) => {
-          const header = this.document.querySelector(".content-header");
-          const errorElement = this.document.createElement("h2");
-          errorElement.setAttribute('data-testid','error-msg')
-          errorElement.textContent = `${error}`;
-          header.appendChild(errorElement);
+          this.displayError(error);
         });
-        // .catch((error) => console.error(error));
     }
+  };
+
+  displayError = (error) => {
+    const header = this.document.querySelector(".content-header");
+    const errorElement = this.document.createElement("h2");
+    errorElement.setAttribute("data-testid", "error-msg");
+    errorElement.textContent = `${error}`;
+    header.appendChild(errorElement);
   };
 }

@@ -13,6 +13,8 @@ import router from "../app/Router.js";
 
 jest.mock("../app/store", () => mockStore);
 
+/* ----------------------------- TESTS D'INTÉGRATION DE LA PAGE NEWBILL ----------------------------- */
+
 describe("Given I am connected as an employee", () => {
   beforeAll(() => {
     Object.defineProperty(window, "localStorage", {
@@ -49,6 +51,8 @@ describe("Given I am connected as an employee", () => {
       expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy();
       expect(screen.getByTestId("form-new-bill")).toBeTruthy();
     });
+
+    // ----------- Vérification des champs du formulaire
 
     test("Then the form should have a field for expense type which would be required", () => {
       const expenseType = screen.getByTestId("expense-type");
@@ -100,9 +104,13 @@ describe("Given I am connected as an employee", () => {
   });
 });
 
+/* ----------------------------- TESTS D'INTÉGRATION POST ET PATCH ----------------------------- */
+
 describe("Given I am connected as an employee", () => {
-  // tests intégration POST
+  // TESTS D'INTÉGRATION POST
+
   describe("When I upload a new file and the file is an image", () => {
+    // Envoi de fichier avec la méthode POST
     it("Should send the file through API POST method", async () => {
       const root = document.createElement("div");
       root.setAttribute("id", "root");
@@ -119,6 +127,7 @@ describe("Given I am connected as an employee", () => {
         store,
         localStorage: window.localStorage,
       });
+      // Mock sur window.alert car non implémenté par Jest
       window.alert = jest.fn();
       const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
       const file = new File(["hello"], "hello.png", { type: "image/png" });
@@ -131,7 +140,10 @@ describe("Given I am connected as an employee", () => {
           },
         });
       });
+      // Vérification de la propriété fileUrl de l'objet newBill :
+      // En cas de succès de la méthode POST, cette propriété prend pour valeur l'url du fichier uploadé
       expect(newBill.fileUrl).not.toBe(null);
+      // Vérification que l'utilisateur se trouve toujours sur la page NewBill
       const message = screen.getByText("Envoyer une note de frais");
       expect(message).toBeTruthy();
     });
@@ -161,7 +173,9 @@ describe("Given I am connected as an employee", () => {
     });
 
     it("Should send file with API POST method and fail with 404 error message", async () => {
+      // Mock de la méthode bills du mockstore
       const spy = jest.spyOn(mockStore, "bills");
+      // Mock de console.error
       const errorSpy = jest.spyOn(console, "error");
       mockStore.bills.mockImplementationOnce(() => {
         return {
@@ -196,6 +210,7 @@ describe("Given I am connected as an employee", () => {
       expect(errorSpy).toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalledTimes(1);
       expect(errorSpy).toHaveBeenCalledWith("POST method - Erreur 404");
+      // Restauration des mocks pour les tests suivants
       spy.mockRestore();
       errorSpy.mockRestore();
     });
@@ -241,8 +256,10 @@ describe("Given I am connected as an employee", () => {
     });
   });
 
-  // tests intégration PATCH
+  // TESTS D'INTÉGRATION PATCH
+
   describe("When I have filled all the required inputs and I click on the submit button", () => {
+    // Envoi du formulaire avec la méthode PATCH
     test("Then I should be redirected to Bills page", async () => {
       const root = document.createElement("div");
       root.setAttribute("id", "root");

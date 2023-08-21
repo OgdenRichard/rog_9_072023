@@ -164,7 +164,7 @@ describe("Given I am connected as an employee", () => {
     });
   });
 
-  // --------- UNIT TESTS --------- //
+  // --------- TESTS UNITAIRES --------- //
 
   describe("When function getBills is called", () => {
     const onNavigate = (pathname) => {
@@ -178,19 +178,19 @@ describe("Given I am connected as an employee", () => {
       store,
       localStorage: window.localStorage,
     });
-
+    // Nombre d'éléments retournés par la méthode GET s'il n'y pas d'erreur
     it("Should use one promise and return an array of 4 objects if promise is resolved", async () => {
       expect.assertions(1);
       const billsArray = await billsJs.getBills();
       expect(billsArray.length).toBe(4);
     });
-
+    // Vérification du formatage correct des dates
     it("Should return valid dates in a proper format", async () => {
       expect.assertions(1);
       const billsArray = await billsJs.getBills();
       expect(billsArray[0].date).toEqual("4 Avr. 04");
     });
-
+    // Vérification du non formatage des dates si format de donnée incorrect
     it("Should return unformatted date value if invalid", async () => {
       jest.spyOn(mockStore, "bills").mockImplementationOnce(() => {
         const billsList = {
@@ -212,7 +212,8 @@ describe("Given I am connected as an employee", () => {
   });
 });
 
-// GET - test d'intégration
+/* ----------------------------- TESTS D'INTÉGRATION GET ----------------------------- */
+
 describe("Given I am connected as an employee", () => {
   describe("When I navigate to bills page", () => {
     it("Should fetch bills from mock API GET", async () => {

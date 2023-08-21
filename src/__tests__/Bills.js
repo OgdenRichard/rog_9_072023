@@ -2,12 +2,7 @@
  * @jest-environment jsdom
  */
 import "@testing-library/jest-dom";
-import {
-  screen,
-  waitFor,
-  toHaveClass,
-  queryAllByText,
-} from "@testing-library/dom";
+import { screen, waitFor } from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import Bills from "../containers/Bills.js";
 import { ROUTES } from "../constants/routes";
@@ -34,7 +29,6 @@ describe("Given I am connected as an employee", () => {
     );
   });
 
-  // TODO cleanup before/after each - all
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
       const root = document.createElement("div");

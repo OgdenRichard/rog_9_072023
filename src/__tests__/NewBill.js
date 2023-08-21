@@ -290,7 +290,7 @@ describe("Given I am connected as an employee", () => {
         document.body.innerHTML = "";
       });
 
-      it("Should send file with API PATCH method and fail with 404 error message", async () => {
+      it("Should submit form with API PATCH method and fail with 404 error message", async () => {
         const root = document.createElement("div");
         root.setAttribute("id", "root");
         document.body.appendChild(root);
@@ -332,7 +332,7 @@ describe("Given I am connected as an employee", () => {
         errorSpy.mockRestore();
       });
 
-      it("Should send file with API POST method and fail with 500 error message", async () => {
+      it("Should submit form with API POST method and fail with 500 error message", async () => {
         const root = document.createElement("div");
         root.setAttribute("id", "root");
         document.body.appendChild(root);
